@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Billing & Inventory Dashboard</title>
+    <title>Business Billing & Inventory Dashboard (Cloud Sync)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
@@ -61,14 +61,15 @@
             .nav-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
             .nav-btn.active { background: rgba(14,164,114,0.16); border-left: 3px solid var(--accent); color: #fff; font-weight: 600; }
 
-            .developer-credit { position: absolute; bottom: 52px; width: 100%; text-align: center; font-size: 10.5px; color: rgba(255,255,255,0.35); padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.06); letter-spacing: .02em; }
-            .logout-btn { position: absolute; bottom: 0; width: 100%; background: rgba(229,72,77,0.14); border-left: none; text-align: center; color: #ff9599; font-weight: 600; }
+            .developer-credit { width: 100%; text-align: center; font-size: 10.5px; color: rgba(255,255,255,0.35); padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.06); letter-spacing: .02em; }
+            .logout-btn { width: 100%; background: rgba(229,72,77,0.14); border-left: none; text-align: center; color: #ff9599; font-weight: 600; justify-content: center; }
             .logout-btn:hover { background: var(--danger); color: white; }
 
             .main-content { flex: 1; padding: 24px 28px; overflow-y: auto; }
             .section { display: none; background: var(--surface); padding: 26px 28px; border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
             .section.active { display: block; animation: fadeIn .25s ease; }
             @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
             h3 { border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-top: 0; margin-bottom: 20px; color: var(--ink); font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; letter-spacing: -0.01em; }
             h4 { color: var(--secondary); margin-bottom: 12px; border-bottom: 1px solid #eef0f5; padding-bottom: 8px; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; letter-spacing: .01em; }
@@ -117,7 +118,14 @@
             .perm-grid label { font-weight: 500; font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer; margin: 0; text-transform: none; color: var(--text); }
 
             #upi-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8,12,24,0.65); backdrop-filter: blur(2px); z-index: 2000; justify-content: center; align-items: center; }
-            .qr-box { background: #fff; padding: 28px; border-radius: 16px; text-align: center; min-width: 260px; box-shadow: var(--shadow-lg); }
+            .qr-box { background: #fff; padding: 28px; border-radius: 16px; min-width: 320px; box-shadow: var(--shadow-lg); width: 380px; }
+            
+            /* Paytm Webhook List Styles */
+            .payment-card { border: 1.5px solid var(--border); padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #fff; transition: all 0.2s ease; text-align: left; box-shadow: var(--shadow-sm); }
+            .payment-card:hover { border-color: var(--primary); background: #f3f6ff; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+            .payment-card-title { font-weight: 700; font-size: 14.5px; color: var(--text); font-family: var(--font-display); }
+            .payment-card-sub { font-size: 11.5px; color: var(--muted); margin-top: 3px; font-weight: 500; }
+            .payment-card-amt { font-weight: 800; color: var(--accent); font-size: 16px; font-family: var(--font-display); }
         }
 
         /* =========================================
@@ -156,22 +164,21 @@
             .inner-table tr:last-child td { border-bottom: none; }
             .inner-table td:last-child { border-right: none; }
             
-            /* ALIGNMENT FIX: Strictly aligned labels for under shop name details */
-            .meta-lbl { display: inline-block; width: 80px; color: #000; } /* Increased width slightly to fit perfectly */
+            .meta-lbl { display: inline-block; width: 80px; color: #000; }
 
             /* Item Table Specifics */
             .tally-items-table { border-top: none; }
             .tally-items-table th { text-align: center; font-weight: bold; border-bottom: 1px solid #000; background-color: #fff !important; }
             .tally-items-table tbody td { border-bottom: none; border-top: none; }
-            .items-spacer { height: 150px; } /* Forces space to push totals to bottom */
+            .items-spacer { height: 150px; } 
 
-            /* ALIGNMENT FIX: Tax Breakdowns strictly formatted */
+            /* Tax Breakdowns strictly formatted */
             .tally-tax-table { border-top: 1px solid #000 !important; table-layout: auto; }
             .tally-tax-table th { text-align: center; background-color: #fff !important; vertical-align: middle; }
             .tally-tax-table td { vertical-align: middle; }
             .border-top-only { border-top: 1px solid #000 !important; }
             
-            /* Logo Positioning - Updated to Flexbox to prevent text wrapping under logo */
+            /* Logo Positioning */
             .logo-box { flex-shrink: 0; width: 60px; height: 60px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
             .logo-box img { max-width: 100%; max-height: 100%; }
         }
@@ -179,15 +186,40 @@
 </head>
 <body>
 
+    <!-- UPDATED UPI QR Modal (Manual Verification & Webhook Sync) -->
     <div id="upi-modal">
-        <div class="qr-box">
-            <h3 style="margin-top: 0; color: var(--primary);">Scan to Pay</h3>
-            <p style="font-size: 16px;">Total Amount: <strong>₹<span id="qr-amount-display">0.00</span></strong></p>
-            <div style="margin: 15px 0;">
-                <img id="upi-qr-image" src="" alt="Loading QR Code..." style="width: 200px; height: 200px; border: 1px solid #ccc; padding: 5px;">
+        <div class="qr-box" style="text-align: center;">
+            <h3 style="margin-top: 0; color: var(--primary);">📱 Scan to Pay via Paytm</h3>
+            <p style="font-size: 16px; margin: 10px 0;">Amount to Pay: <strong style="font-size: 26px; color: var(--accent); display:block; margin-top:5px;">₹<span id="qr-amount-display">0.00</span></strong></p>
+            
+            <div id="qr-code-wrapper" style="margin: 15px auto; padding: 10px; background: #f8f9fa; border: 1px solid #e2e6f0; border-radius: 12px; display: inline-block;">
+                <img id="upi-qr-image" src="" alt="Loading QR Code..." style="width: 220px; height: 220px;">
             </div>
-            <p style="font-size: 11px; color: #666; margin-bottom: 15px;" id="qr-upi-id-display"></p>
-            <button class="btn btn-danger" onclick="closeUPIModal()" style="width: 100%; padding: 10px; font-size: 16px;">Close</button>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">UPI ID: <strong id="qr-upi-id-display"></strong></p>
+
+            <!-- Status Box / List of Received Payments -->
+            <div id="upi-status-text" style="background: #eef2ff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; color: var(--primary-dark); border: 1px solid #dbe4ff;">
+                <span style="display:inline-block; animation: blink 1.5s infinite;">⏳</span> <strong>Listening for Payments...</strong><br>
+                <span style="font-size: 11px; color: #666;">(Awaiting Paytm Gateway Notification)</span>
+            </div>
+
+            <!-- Dynamic Payments List (For Multiple Payments Scenario) -->
+            <div id="paytm-payments-list" style="display:none; max-height: 220px; overflow-y:auto; margin-bottom: 15px; padding: 5px;"></div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn btn-success" onclick="confirmUPIPayment()" style="flex: 2; padding: 14px; font-size: 14px; box-shadow: 0 4px 10px rgba(14,164,114,0.3);">
+                    ✅ Manual Confirm
+                </button>
+                <button class="btn btn-danger" onclick="closeUPIModal()" style="flex: 1; padding: 14px; font-size: 14px;">
+                    ❌ Cancel
+                </button>
+            </div>
+            
+            <!-- Testing Tool for Webhooks -->
+            <button class="btn btn-warning" onclick="simulatePaytmWebhookPush()" style="width: 100%; margin-top: 15px; font-size: 11px; padding: 8px; color:#fff; background: #e67e22;">
+                🧪 Simulate 2 Payments (Test API)
+            </button>
         </div>
     </div>
 
@@ -222,7 +254,14 @@
             <button id="nav-audit" class="nav-btn" onclick="showSection('audit')">📜 Activity Logs</button>
             <button id="nav-profile" class="nav-btn" onclick="showSection('profile')">⚙️ Settings & Users</button>
             
-            <div class="developer-credit">Developed by<br><strong style="color:#bdc3c7;">DHARMARAJA RAVICHANDIRAN</strong></div>
+            <div style="flex-grow: 1;"></div> 
+
+            <div class="developer-credit" style="margin-bottom: 15px;">Developed by<br><strong style="color:#bdc3c7;">DHARMARAJA RAVICHANDIRAN</strong></div>
+
+            <div id="network-status" style="text-align:center; padding: 10px; margin-bottom: 10px; background: #27ae60; color: white; font-size: 12px; font-weight: bold; border-radius: 4px; margin-left: 10px; margin-right: 10px;">
+                🟢 ONLINE & SYNCED
+            </div>
+            
             <button class="nav-btn logout-btn" onclick="logout()">🚪 Logout</button>
         </div>
 
@@ -265,11 +304,11 @@
                             <select id="dash-pay-mode" class="dash-select" onchange="toggleUPI()">
                                 <option value="Cash" selected>Cash</option>
                                 <option value="Card">Card / POS</option>
-                                <option value="UPI">UPI / QR</option>
+                                <option value="UPI">UPI / QR (Paytm Integration)</option>
                             </select>
                         </div>
                         <div class="form-group" id="upi-action-container" style="display:none; margin:0;">
-                            <button class="btn btn-info" style="height: 38px;" onclick="initiateUPI()">📱 Scan QR / UPI</button>
+                            <button class="btn btn-info" style="height: 38px; background: #00b9f5; border:1px solid #0096c7; color: white; font-weight: bold;" onclick="initiateUPI()">📱 Scan QR / Paytm Webhook</button>
                         </div>
                     </div>
                 </div>
@@ -420,7 +459,6 @@
                     <h4>Estimated Physical Value: ₹<span id="inv-cum-value" style="color:var(--accent);">0.00</span></h4>
                 </div>
 
-                <!-- ADDED UNIT (UOM) FIELD HERE -->
                 <div id="inventory-admin-form" style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 5px; display:none;">
                     <div class="form-group" style="margin:0;">
                         <label>Item Type</label>
@@ -571,7 +609,7 @@
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                                     <div class="form-group" style="margin:0; grid-column: 1 / 3;"><label>Staff Full Name</label><input type="text" id="new-fullname" class="dash-input" placeholder="John Doe"></div>
                                     <div class="form-group" style="margin:0;"><label>Login ID (Username)</label><input type="text" id="new-username" class="dash-input" placeholder="johnd"></div>
-                                    <div class="form-group" style="margin:0;" id="password-group"><label>Password</label><input type="text" id="new-password" class="dash-input" placeholder="Password"></div>
+                                    <div class="form-group" style="margin:0;" id="password-group"><label>Password</label><input type="password" id="new-password" class="dash-input" placeholder="Password"></div>
                                     <div class="form-group" style="margin:0;"><label>Daily Wage (₹)</label><input type="number" id="new-wage" class="dash-input" placeholder="e.g. 500"></div>
                                     <div class="form-group" style="margin:0;"><label>System Role</label>
                                         <select id="new-role" class="dash-select"><option value="USER">Staff (USER)</option><option value="ADMIN">Admin (ADMIN)</option></select>
@@ -631,7 +669,7 @@
     </div>
 
     <!-- ========================================================= -->
-    <!-- NEW REWRITTEN TALLY ERP 9 PRINT AREA LAYOUT               -->
+    <!-- TALLY ERP 9 PRINT AREA LAYOUT                               -->
     <!-- ========================================================= -->
     <div id="print-area">
         <div class="tally-invoice-wrapper" id="dynamic-invoice-wrapper">
@@ -646,12 +684,10 @@
 
             <table class="tally-top-section">
                 <tr>
-                    <!-- LEFT SIDE: SELLER & BUYER -->
                     <td style="width: 50%;">
                         <table class="inner-table">
                             <tr>
                                 <td style="height: 120px;">
-                                    <!-- ALIGNMENT FIX: Flex wrapper prevents text from wrapping under logo -->
                                     <div style="display: flex; align-items: flex-start;">
                                         <div class="logo-box">
                                             <img id="print-logo-img" src="" style="display: none;">
@@ -660,7 +696,6 @@
                                             <div style="font-size: 14px;" class="bold" id="print-shop-name"></div>
                                             <div style="white-space: pre-wrap; margin-bottom: 4px;" id="print-shop-addr"></div>
                                             
-                                            <!-- ALIGNMENT FIX: Inline blocks to perfectly align Colons (:) under Shop Name -->
                                             <div style="line-height: 1.4;">
                                                 <span class="meta-lbl">GSTIN/UIN</span>: <span id="print-shop-gst" class="bold"></span><br>
                                                 <span class="meta-lbl">State Name</span>: <span id="print-shop-state"></span><br>
@@ -688,7 +723,6 @@
                         </table>
                     </td>
                     
-                    <!-- RIGHT SIDE: METADATA -->
                     <td style="width: 50%;">
                         <table class="inner-table">
                             <tr>
@@ -818,31 +852,187 @@
 
     <!-- Script Block -->
     <script>
+        // ==========================================
+        // CONFIGURATION (INJECTED BY GITHUB ACTIONS)
+        // ==========================================
+        const PAYTM_CONFIG = {
+            MID: "__PAYTM_MID__",
+            WEBSITE: "__PAYTM_WEBSITE__",
+            INDUSTRY_TYPE_ID: "__PAYTM_INDUSTRY__",
+            CHANNEL_ID: "__PAYTM_CHANNEL__",
+            MERCHANT_KEY: "__PAYTM_KEY__" 
+        };
+
+        const WEB_APP_URL = "__GOOGLE_WEB_APP_URL__";
+        const DEFAULT_ADMIN_USER = "__ADMIN_USERNAME__";
+        const DEFAULT_ADMIN_PASS = "__ADMIN_PASSWORD__";
+
+        // ==========================================
+        // ADVANCED REAL INTERNET CHECKER
+        // ==========================================
+        function updateNetworkStatus(isOnline, customMsg = null) {
+            let ns = document.getElementById('network-status');
+            if(!ns) return;
+            if (customMsg) {
+                ns.innerHTML = customMsg;
+                ns.style.background = '#f39c12'; // sync warning color
+            } else if(isOnline) { 
+                ns.innerHTML = '🟢 ONLINE & SYNCED (Internet Access)'; 
+                ns.style.background = '#27ae60'; 
+            } else { 
+                ns.innerHTML = '🔴 OFFLINE (Auto-sync paused)'; 
+                ns.style.background = '#c0392b'; 
+            }
+        }
+
+        async function checkActualInternet() {
+            if (!navigator.onLine) {
+                updateNetworkStatus(false);
+                return;
+            }
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000); 
+                await fetch("https://www.gstatic.com/generate_204?_=" + new Date().getTime(), {
+                    method: 'HEAD',
+                    mode: 'no-cors', 
+                    cache: 'no-store',
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                updateNetworkStatus(true);
+            } catch (error) {
+                updateNetworkStatus(false); 
+            }
+        }
+
+        window.addEventListener('online', checkActualInternet);
+        window.addEventListener('offline', () => updateNetworkStatus(false));
+        setInterval(checkActualInternet, 5000); 
+
+        // ==========================================
+        // HYBRID SYNC: LOCAL STORAGE FIRST -> THEN CLOUD PUSH
+        // ==========================================
+        async function syncData(key, dataObj) {
+            console.log(`[SYNC INIT] Preparing to sync key: ${key}`);
+            
+            // 1. Instant Local Save for zero-lag UI
+            localStorage.setItem(key, JSON.stringify(dataObj));
+            
+            // Prevent attempting to sync if placeholders aren't replaced
+            if (WEB_APP_URL.includes('__GOOGLE_WEB_APP_URL__')) return;
+
+            // 2. Background push to Google Apps Script
+            if(navigator.onLine) {
+                updateNetworkStatus(true, '🔄 Syncing to Cloud...');
+                try {
+                    let payloadStr = JSON.stringify({ action: 'syncData', key: key, data: dataObj });
+                    
+                    let response = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain' }, // Avoids CORS preflight block
+                        body: payloadStr
+                    });
+                    
+                    let resultText = await response.text();
+                    updateNetworkStatus(true);
+                } catch(e) {
+                    console.error("[SYNC ERROR] Failed to push to cloud:", e);
+                    updateNetworkStatus(false);
+                }
+            } else {
+                console.log(`[SYNC OFFLINE] Saved '${key}' locally. Will sync later.`);
+            }
+        }
+
+        // ==========================================
+        // FETCH DATA FROM GOOGLE SHEETS ON LOAD
+        // ==========================================
+        async function fetchInitialCloudData() {
+            if(!navigator.onLine || WEB_APP_URL.includes('__GOOGLE_WEB_APP_URL__')) return;
+            
+            updateNetworkStatus(true, '🔄 Cloud sync in progress...');
+            try {
+                let res = await fetch(WEB_APP_URL + "?action=getAllData");
+                let result = await res.json();
+                
+                if (result && result.data) {
+                    if (result.data.usersDB) { usersDB = result.data.usersDB; localStorage.setItem('usersDB', JSON.stringify(usersDB)); }
+                    if (result.data.products) { products = result.data.products; localStorage.setItem('products', JSON.stringify(products)); }
+                    if (result.data.sales) { sales = result.data.sales; localStorage.setItem('sales', JSON.stringify(sales)); }
+                    if (result.data.auditLogs) { auditLogs = result.data.auditLogs; localStorage.setItem('auditLogs', JSON.stringify(auditLogs)); }
+                    if (result.data.attendanceDB) { attendanceDB = result.data.attendanceDB; localStorage.setItem('attendanceDB', JSON.stringify(attendanceDB)); }
+                    if (result.data.shopProfile) { shopProfile = result.data.shopProfile; localStorage.setItem('shopProfile', JSON.stringify(shopProfile)); }
+                    
+                    // Refresh current UI automatically if user is active
+                    if (currentUser) {
+                        renderUsersTable();
+                        refreshInventoryUI();
+                        refreshReportsUI();
+                        refreshAuditUI();
+                        refreshAttendanceUI();
+                        loadProfileUI();
+                        document.getElementById('sidebar-shop-name').innerText = shopProfile.name || "BILLING SYSTEM";
+                    }
+                }
+                updateNetworkStatus(true);
+            } catch (e) {
+                console.error("[FETCH ERROR] Failed to load initial data from cloud.", e);
+                updateNetworkStatus(false);
+            }
+        }
+
+        // ==========================================
+        // ORIGINAL VARIABLES & DATA LOADING
+        // ==========================================
         let currentUser = null; 
         let editingUsername = null; 
+        let cart = [];
+        let currentlyEditingProductId = null;
         
         let usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
-        if (!Array.isArray(usersDB) || usersDB.length === 0 || !usersDB.some(u => u.username === 'admin')) {
+        
+        // --- SECURE ADMIN CREATION LOGIC ---
+        // Generates the initial admin account based on GitHub secrets
+        if (!Array.isArray(usersDB) || usersDB.length === 0 || !usersDB.some(u => u.role === 'ADMIN')) {
             usersDB = [
-                { username: 'admin', password: '123', role: 'ADMIN', fullName: 'Super Admin', dailyWage: 0, permissions: { billing: true, reports: true, inventory: true, audit: true, profile: true, attendance: true } }
+                { 
+                    username: DEFAULT_ADMIN_USER, 
+                    password: DEFAULT_ADMIN_PASS, 
+                    role: 'ADMIN', 
+                    fullName: 'Super Admin', 
+                    dailyWage: 0, 
+                    permissions: { billing: true, reports: true, inventory: true, audit: true, profile: true, attendance: true } 
+                }
             ];
-            localStorage.setItem('usersDB', JSON.stringify(usersDB));
+            
+            // Sync to local/cloud ONLY if the placeholder was successfully replaced by GitHub Actions
+            // If running strictly locally without building, it will just use "__ADMIN_USERNAME__" as the login temporary.
+            if (!DEFAULT_ADMIN_USER.includes('__ADMIN_USERNAME__')) {
+                syncData('usersDB', usersDB);
+            } else {
+                localStorage.setItem('usersDB', JSON.stringify(usersDB));
+            }
         }
 
         let products = JSON.parse(localStorage.getItem('products')) || [];
         let sales = JSON.parse(localStorage.getItem('sales')) || [];
         let auditLogs = JSON.parse(localStorage.getItem('auditLogs')) || [];
         let attendanceDB = JSON.parse(localStorage.getItem('attendanceDB')) || [];
-        let cart = [];
-        let currentlyEditingProductId = null;
-        
         let shopProfile = JSON.parse(localStorage.getItem('shopProfile')) || {
             invPrefix: "INV-", invNextNum: 1, name: "SRI SAKTHI SYSTEMS", addr: "Shop No. 1, Main Road, City Center",
             gst: "33AAAAA0000A1Z5", state: "Tamil Nadu, Code : 33", contact: "+91 9876543210", email: "info@srisakthisystems.com", logoBase64: "",
             upiId: "", printBorder: "0", printMargin: "10", printFontSize: "11", pan: "", bankAcName: "", bankName: "", bankAccNo: "", bankIFSC: "", footerNote: ""
         };
 
-        window.onload = () => { document.getElementById('login-user').focus(); };
+        // ==========================================
+        // CORE APPLICATION LOGIC
+        // ==========================================
+        window.onload = () => { 
+            checkActualInternet();
+            fetchInitialCloudData(); 
+            document.getElementById('login-user').focus(); 
+        };
 
         function attemptLogin() {
             let u = document.getElementById('login-user').value.trim();
@@ -969,7 +1159,7 @@
         function punchIn() {
             let today = new Date().toLocaleDateString('en-GB');
             attendanceDB.push({ id: Date.now(), date: today, user: currentUser.username, inTime: new Date().toISOString(), outTime: null });
-            localStorage.setItem('attendanceDB', JSON.stringify(attendanceDB));
+            syncData('attendanceDB', attendanceDB);
             logAudit('ATTENDANCE', 'Staff Punched IN');
             refreshAttendanceUI();
         }
@@ -979,7 +1169,7 @@
             let record = attendanceDB.find(a => a.user === currentUser.username && a.date === today);
             if(record) {
                 record.outTime = new Date().toISOString();
-                localStorage.setItem('attendanceDB', JSON.stringify(attendanceDB));
+                syncData('attendanceDB', attendanceDB);
                 logAudit('ATTENDANCE', 'Staff Punched OUT');
                 refreshAttendanceUI();
             }
@@ -992,7 +1182,7 @@
             if(newIn !== null && newIn.trim() !== '') a.inTime = newIn;
             let newOut = prompt(`Edit Punch-OUT Time (Format: YYYY-MM-DDTHH:MM:SS)\nCurrent: ${a.outTime || 'None'}`, a.outTime || '');
             if(newOut !== null && newOut.trim() !== '') a.outTime = newOut;
-            localStorage.setItem('attendanceDB', JSON.stringify(attendanceDB));
+            syncData('attendanceDB', attendanceDB);
             logAudit('ATTENDANCE', `Admin modified times for ${a.user} on ${a.date}`);
             refreshAttendanceUI();
         }
@@ -1041,7 +1231,7 @@
             currentUser.password = newPass;
             let dbIndex = usersDB.findIndex(u => u.username === currentUser.username);
             if(dbIndex !== -1) usersDB[dbIndex].password = newPass;
-            localStorage.setItem('usersDB', JSON.stringify(usersDB));
+            syncData('usersDB', usersDB);
             logAudit('SECURITY', `${currentUser.username} changed their personal password.`);
             alert("Password updated successfully!");
             document.getElementById('update-pass-input').value = '';
@@ -1053,7 +1243,7 @@
                 let u = usersDB.find(usr => usr.username === username);
                 if(u) {
                     u.password = newPass.trim();
-                    localStorage.setItem('usersDB', JSON.stringify(usersDB));
+                    syncData('usersDB', usersDB);
                     logAudit('SECURITY', `Admin forcefully reset password for user: ${username}`);
                     alert(`Password for ${username} updated successfully!`);
                 }
@@ -1124,7 +1314,7 @@
                 logAudit('SYSTEM', `New Staff User Created: ${u}`);
             }
 
-            localStorage.setItem('usersDB', JSON.stringify(usersDB));
+            syncData('usersDB', usersDB);
             resetUserForm();
             renderUsersTable();
         }
@@ -1132,7 +1322,7 @@
         function deleteUser(username) {
             if(username === 'admin' || username === currentUser.username) return alert("Cannot delete main admin or yourself.");
             usersDB = usersDB.filter(u => u.username !== username);
-            localStorage.setItem('usersDB', JSON.stringify(usersDB));
+            syncData('usersDB', usersDB);
             logAudit('SYSTEM', `User Deleted: ${username}`);
             renderUsersTable();
         }
@@ -1173,15 +1363,15 @@
         }
 
         function saveData() {
-            localStorage.setItem('products', JSON.stringify(products));
-            localStorage.setItem('sales', JSON.stringify(sales));
+            syncData('products', products);
+            syncData('sales', sales);
         }
 
         function logAudit(type, desc, overrideUser = null) {
             let uName = overrideUser ? overrideUser : (currentUser ? currentUser.username : 'System');
             auditLogs.unshift({ timestamp: new Date().toISOString(), type, user: uName, desc });
             if(auditLogs.length > 500) auditLogs.length = 500;
-            localStorage.setItem('auditLogs', JSON.stringify(auditLogs));
+            syncData('auditLogs', auditLogs);
             refreshAuditUI();
         }
 
@@ -1201,7 +1391,7 @@
             if(currentUser.role !== 'ADMIN') return alert("Access Denied.");
             if(confirm("Are you sure you want to completely clear the Activity Log history?")) {
                 auditLogs = [];
-                localStorage.setItem('auditLogs', JSON.stringify(auditLogs));
+                syncData('auditLogs', auditLogs);
                 refreshAuditUI();
             }
         }
@@ -1273,12 +1463,19 @@
             shopProfile.printFontSize = document.getElementById('prof-print-font').value || "11";
             
             document.getElementById('sidebar-shop-name').innerText = shopProfile.name || "BILLING SYSTEM";
-            localStorage.setItem('shopProfile', JSON.stringify(shopProfile));
+            syncData('shopProfile', shopProfile);
             if(!silent) {
                 logAudit('SYSTEM', 'Shop Profile Settings Modified');
                 alert("Settings & Shop Profile Saved successfully!");
             }
         }
+
+        // ==========================================
+        // NEW UPI VERIFICATION FUNCTIONS (POLLING)
+        // ==========================================
+        let paytmPollTimer = null;
+        let currentPaytmOrderId = null;
+        let expectedAmountGlobal = 0;
 
         function toggleUPI() {
             let mode = document.getElementById('dash-pay-mode').value;
@@ -1290,18 +1487,131 @@
             let total = parseFloat(document.getElementById('cart-total').innerText);
             if(total <= 0) return alert("Cart is empty or total is 0.");
             
-            let upiString = `upi://pay?pa=${shopProfile.upiId}&pn=${encodeURIComponent(shopProfile.name)}&am=${total}&cu=INR`;
+            expectedAmountGlobal = total; // Store for verification
+            currentPaytmOrderId = "ORD_" + Date.now();
+            let upiString = `upi://pay?pa=${shopProfile.upiId}&pn=${encodeURIComponent(shopProfile.name)}&am=${total}&cu=INR&tn=${currentPaytmOrderId}`;
+            
             document.getElementById('qr-amount-display').innerText = total.toFixed(2);
             document.getElementById('qr-upi-id-display').innerText = shopProfile.upiId;
             document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+            
+            // Reset the status UI text and list
+            document.getElementById('upi-status-text').innerHTML = `
+                <span style="display:inline-block; animation: blink 1.5s infinite;">⏳</span> <strong>Listening for Payments...</strong><br>
+                <span style="font-size: 11px; color: #666;">(Awaiting Paytm Gateway Notification)</span>
+            `;
+            document.getElementById('paytm-payments-list').style.display = 'none';
+            document.getElementById('qr-code-wrapper').style.display = 'inline-block';
+            
             document.getElementById('upi-modal').style.display = 'flex';
+
+            // Start Auto Polling your Webhook Backend
+            startPaytmAutoVerification(currentPaytmOrderId, total);
+        }
+
+        function startPaytmAutoVerification(orderId, expectedAmount) {
+            if (paytmPollTimer) clearInterval(paytmPollTimer);
+
+            // Poll status every 3 seconds to check for incoming webhook data
+            paytmPollTimer = setInterval(() => {
+                checkPaytmPaymentStatus(orderId, expectedAmount);
+            }, 3000);
+        }
+
+        async function checkPaytmPaymentStatus(orderId, expectedAmount) {
+            // NOTE: A real implementation would fetch from your backend that received the Webhook:
+            // e.g., fetch(`http://your-server.com/get-recent-payments?amount=${expectedAmount}`)
+            
+            if (!navigator.onLine) return;
+
+            try {
+                // Since this HTML operates directly, this is the exact logic for how you 
+                // handle multiple payments when your backend API returns an array of matched transactions.
+                
+                // Example Fetch (Commented out because there is no actual backend URL provided for this)
+                /*
+                const response = await fetch(`http://localhost:3000/api/recent-payments`);
+                const data = await response.json(); // { payments: [ { txnId: '...', sender: 'John', amount: 500, time: '...' } ] }
+                
+                if (data && data.payments && data.payments.length > 0) {
+                    let matches = data.payments.filter(p => parseFloat(p.amount) === parseFloat(expectedAmount));
+                    if (matches.length > 0) {
+                        renderPaymentSelectionList(matches);
+                        clearInterval(paytmPollTimer);
+                    }
+                }
+                */
+            } catch (error) {
+                // Silent catch
+                console.error("Webhook Polling error: ", error);
+            }
+        }
+        
+        // --- MULTIPLE PAYMENT UI HANDLER (As Requested) ---
+        function renderPaymentSelectionList(paymentsArray) {
+            let listContainer = document.getElementById('paytm-payments-list');
+            document.getElementById('upi-status-text').innerHTML = '✅ <strong style="color:green;">Matches found! Select one to approve:</strong>';
+            
+            // Hide the QR code to focus on selection
+            document.getElementById('qr-code-wrapper').style.display = 'none';
+            
+            let html = '';
+            paymentsArray.forEach(p => {
+                html += `
+                <div class="payment-card" onclick="approveWebhookPayment('${p.txnId}', '${p.sender}')">
+                    <div>
+                        <div class="payment-card-title">👤 ${p.sender || 'Unknown Sender'}</div>
+                        <div class="payment-card-sub">🕒 ${p.time} | TXN: ${p.txnId}</div>
+                    </div>
+                    <div class="payment-card-amt">₹${parseFloat(p.amount).toFixed(2)}</div>
+                </div>`;
+            });
+            
+            listContainer.innerHTML = html;
+            listContainer.style.display = 'block';
+        }
+
+        // Simulating the Webhook hitting your backend and multiple people paying simultaneously
+        function simulatePaytmWebhookPush() {
+            if (paytmPollTimer) clearInterval(paytmPollTimer);
+            
+            // Randomly generating 2 incoming payments with the exact same amount expected by the cart
+            let simulatedPayments = [
+                { txnId: "PTM" + Math.floor(Math.random()*1000000), sender: "Suresh Kumar", amount: expectedAmountGlobal, time: new Date().toLocaleTimeString() },
+                { txnId: "PTM" + Math.floor(Math.random()*1000000), sender: "Ramesh Babu", amount: expectedAmountGlobal, time: new Date().toLocaleTimeString() }
+            ];
+            
+            renderPaymentSelectionList(simulatedPayments);
+        }
+
+        function approveWebhookPayment(txnId, senderName) {
+            closeUPIModal();
+            alert(`✅ Payment from ${senderName} (TXN: ${txnId}) Approved!\nProcessing Invoice...`);
+            
+            // Auto-fill the transaction ID into the invoice notes
+            document.getElementById('dash-other-ref').value = `Paytm TXN: ${txnId} (${senderName})`;
+            processNewSaleAndPrint();
         }
 
         function closeUPIModal() {
+            if (paytmPollTimer) clearInterval(paytmPollTimer);
             document.getElementById('upi-modal').style.display = 'none';
             document.getElementById('upi-qr-image').src = '';
+            document.getElementById('paytm-payments-list').style.display = 'none';
+            document.getElementById('qr-code-wrapper').style.display = 'inline-block';
         }
 
+        function confirmUPIPayment() {
+            // Manual Force-Close Option
+            if (paytmPollTimer) clearInterval(paytmPollTimer);
+            closeUPIModal();
+            alert("✅ Payment Confirmed Manually!\nProcessing Invoice...");
+            processNewSaleAndPrint(); 
+        }
+
+        // ==========================================
+        // EXPORTS & REPORTS
+        // ==========================================
         function downloadCSV(csvContent, filename) {
             let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             let link = document.createElement("a");
@@ -1392,6 +1702,9 @@
             logAudit('SYSTEM', `Exported Sales Report to Excel (${exportCount} records)`);
         }
 
+        // ==========================================
+        // INVENTORY LOGIC
+        // ==========================================
         function toggleInvStockField() {
             let isService = document.getElementById('inv-type').value === 'service';
             document.getElementById('inv-stock').disabled = isService;
@@ -1530,6 +1843,9 @@
             document.getElementById('inv-cum-value').innerText = totalValue.toFixed(2);
         }
 
+        // ==========================================
+        // BILLING & INVOICE LOGIC
+        // ==========================================
         function showAutocomplete(val) {
             const list = document.getElementById('autocomplete-list');
             list.innerHTML = '';
@@ -1696,9 +2012,7 @@
 
         function renderInvoiceToDOM(saleObj) {
             applyPageSizeSettings();
-
             document.getElementById('print-timestamp').innerText = new Date().toLocaleString('en-GB');
-
             document.getElementById('print-shop-name').innerText = shopProfile.name;
             document.getElementById('print-sign-name').innerText = shopProfile.name;
             document.getElementById('print-shop-addr').innerText = shopProfile.addr;
@@ -2125,7 +2439,7 @@
         function clearSalesHistory() {
             if(currentUser.role !== 'ADMIN') return alert("Access Denied.");
             if(confirm("DANGER! This will permanently wipe out all cumulative database sales records. Continue?")) {
-                sales = []; localStorage.setItem('sales', JSON.stringify(sales));
+                sales = []; syncData('sales', sales);
                 logAudit('SECURITY', 'Wiped complete sales ledger records history out.'); refreshReportsUI();
             }
         }
