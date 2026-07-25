@@ -2,9 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"] # Ensure this matches your default branch (main or master)
+    branches:
+      - main
 
-# Needed for the newer GitHub Pages deployment actions to authenticate securely
 permissions:
   contents: read
   pages: write
@@ -13,15 +13,14 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
-    # Links the deployment to the GitHub Pages environment
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
+
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 # Updated to v4
+        uses: actions/checkout@v4
 
       - name: Inject Secrets into HTML
         run: |
@@ -35,21 +34,13 @@ jobs:
           sed -i 's|__ADMIN_PASSWORD__|${{ secrets.ADMIN_PASSWORD }}|g' index.html
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4 # Updated to v4
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3 # Updated to v3 (Fixes the deprecation error)
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: .
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 # Updated to v4
-```eof
-
-### What to do next:
-1. Go to your repository and open `.github/workflows/deploy.yml`.
-2. Delete the old code inside it and paste this updated code.
-3. Commit the changes. 
-
-As soon as you commit, GitHub will automatically trigger a new deployment run. Since we have updated the versions to `v3` and `v4`, it will bypass the deprecation error and successfully publish your site!
+        uses: actions/deploy-pages@v4
