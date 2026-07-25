@@ -1,0 +1,35 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"] # Or master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Inject Secrets into HTML
+        run: |
+          sed -i 's|__PAYTM_MID__|${{ secrets.PAYTM_MID }}|g' index.html
+          sed -i 's|__PAYTM_WEBSITE__|${{ secrets.PAYTM_WEBSITE }}|g' index.html
+          sed -i 's|__PAYTM_INDUSTRY__|${{ secrets.PAYTM_INDUSTRY }}|g' index.html
+          sed -i 's|__PAYTM_CHANNEL__|${{ secrets.PAYTM_CHANNEL }}|g' index.html
+          sed -i 's|__PAYTM_KEY__|${{ secrets.PAYTM_KEY }}|g' index.html
+          sed -i 's|__GOOGLE_WEB_APP_URL__|${{ secrets.GOOGLE_WEB_APP_URL }}|g' index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
