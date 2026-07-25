@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"] # Or master
+    branches: ["main"] # Ensure this matches your default branch (main or master)
 
 jobs:
   build-and-deploy:
@@ -19,6 +19,8 @@ jobs:
           sed -i 's|__PAYTM_CHANNEL__|${{ secrets.PAYTM_CHANNEL }}|g' index.html
           sed -i 's|__PAYTM_KEY__|${{ secrets.PAYTM_KEY }}|g' index.html
           sed -i 's|__GOOGLE_WEB_APP_URL__|${{ secrets.GOOGLE_WEB_APP_URL }}|g' index.html
+          sed -i 's|__ADMIN_USERNAME__|${{ secrets.ADMIN_USERNAME }}|g' index.html
+          sed -i 's|__ADMIN_PASSWORD__|${{ secrets.ADMIN_PASSWORD }}|g' index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
