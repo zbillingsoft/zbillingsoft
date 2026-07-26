@@ -2,8 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -13,25 +12,25 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
+    
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
+      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Inject Secrets into HTML
+      - name: Inject Secrets into app.js
         run: |
-          sed -i 's|__PAYTM_MID__|${{ secrets.PAYTM_MID }}|g' index.html
-          sed -i 's|__PAYTM_WEBSITE__|${{ secrets.PAYTM_WEBSITE }}|g' index.html
-          sed -i 's|__PAYTM_INDUSTRY__|${{ secrets.PAYTM_INDUSTRY }}|g' index.html
-          sed -i 's|__PAYTM_CHANNEL__|${{ secrets.PAYTM_CHANNEL }}|g' index.html
-          sed -i 's|__PAYTM_KEY__|${{ secrets.PAYTM_KEY }}|g' index.html
-          sed -i 's|__GOOGLE_WEB_APP_URL__|${{ secrets.GOOGLE_WEB_APP_URL }}|g' index.html
-          sed -i 's|__ADMIN_USERNAME__|${{ secrets.ADMIN_USERNAME }}|g' index.html
-          sed -i 's|__ADMIN_PASSWORD__|${{ secrets.ADMIN_PASSWORD }}|g' index.html
+          sed -i 's|__PAYTM_MID__|${{ secrets.PAYTM_MID }}|g' app.js
+          sed -i 's|__PAYTM_WEBSITE__|${{ secrets.PAYTM_WEBSITE }}|g' app.js
+          sed -i 's|__PAYTM_INDUSTRY__|${{ secrets.PAYTM_INDUSTRY }}|g' app.js
+          sed -i 's|__PAYTM_CHANNEL__|${{ secrets.PAYTM_CHANNEL }}|g' app.js
+          sed -i 's|__PAYTM_KEY__|${{ secrets.PAYTM_KEY }}|g' app.js
+          sed -i 's|__GOOGLE_WEB_APP_URL__|${{ secrets.GOOGLE_WEB_APP_URL }}|g' app.js
+          sed -i 's|__ADMIN_USERNAME__|${{ secrets.ADMIN_USERNAME }}|g' app.js
+          sed -i 's|__ADMIN_PASSWORD__|${{ secrets.ADMIN_PASSWORD }}|g' app.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -39,8 +38,14 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+```eof
+
+**What changed?**
+I changed `index.html` to `app.js` inside the `sed -i` commands. Now, GitHub Actions will correctly find the `__ADMIN_USERNAME__` placeholder inside your JavaScript file and swap it with your secret before pushing it to the live website.
+
+Once you commit this change, wait about 1-2 minutes for the Action to run and finish. Then, hard refresh your website (`Ctrl + F5`) and try logging in with the username and password you set in your GitHub Secrets. It should work perfectly!
